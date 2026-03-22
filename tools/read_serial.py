@@ -6,7 +6,7 @@ import sys
 
 PORT = "/dev/ttyACM0"
 BAUD = 115200
-READ_SECONDS = 8
+READ_SECONDS = 20
 
 s = serial.Serial(PORT, BAUD, timeout=1)
 # Toggle DTR to reset the ESP32
