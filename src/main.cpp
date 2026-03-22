@@ -27,6 +27,7 @@ DNSServer dns;
 
 String team     = "FALCON";
 String callsign = "ROMEO 11";
+int    teamSize = 3;
 
 bool          wifiActive     = false;
 unsigned long wifiStartMs    = 0;
@@ -57,6 +58,8 @@ const char PAGE[] PROGMEM = R"EPD(<!DOCTYPE html>
     <input name="team" id="team" placeholder="TEAM">
     <label>Callsign</label>
     <input name="callsign" id="callsign" placeholder="CALLSIGN">
+    <label>Team Size</label>
+    <input name="teamsize" id="teamsize" placeholder="3" type="number" min="1" max="99" style="text-transform:none">
     <div class="actions">
       <button type="submit" id="submit">Send</button>
       <button type="button" id="reset" onclick="resetFields()">Reset</button>
@@ -68,6 +71,7 @@ const char PAGE[] PROGMEM = R"EPD(<!DOCTYPE html>
       .then(function(s) {
         document.getElementById('team').value = s.team;
         document.getElementById('callsign').value = s.callsign;
+        document.getElementById('teamsize').value = s.teamsize;
       });
     function resetFields() {
       fetch('/reset', {method:'POST'}).then(function() { location.reload(); });
@@ -85,7 +89,7 @@ void drawFull(bool showQR)
     do {
         display.fillScreen(GxEPD_WHITE);
         drawLeftContent(showQR);
-        drawRightContent(team, callsign);
+        drawRightContent(team, callsign, teamSize);
     } while (display.nextPage());
 }
 
@@ -107,7 +111,7 @@ void drawRight()
     display.firstPage();
     do {
         display.fillScreen(GxEPD_WHITE);
-        drawRightContent(team, callsign);
+        drawRightContent(team, callsign, teamSize);
     } while (display.nextPage());
 }
 
@@ -143,7 +147,7 @@ void handleRoot()
 
 void handleState()
 {
-    String json = "{\"team\":\"" + team + "\",\"callsign\":\"" + callsign + "\"}";
+    String json = "{\"team\":\"" + team + "\",\"callsign\":\"" + callsign + "\",\"teamsize\":" + String(teamSize) + "}";
     server.send(200, "application/json", json);
 }
 
@@ -157,7 +161,11 @@ void handleUpdate()
         callsign = server.arg("callsign");
         callsign.toUpperCase();
     }
-    Serial.printf("[update] team=%s callsign=%s\n", team.c_str(), callsign.c_str());
+    if (server.hasArg("teamsize")) {
+        int n = server.arg("teamsize").toInt();
+        if (n > 0) teamSize = n;
+    }
+    Serial.printf("[update] team=%s callsign=%s teamSize=%d\n", team.c_str(), callsign.c_str(), teamSize);
 
     wifiStartMs = millis();
     drawRight();
@@ -170,6 +178,7 @@ void handleReset()
 {
     team     = "FALCON";
     callsign = "ROMEO 11";
+    teamSize = 3;
     Serial.println("[reset] defaults restored");
     wifiStartMs = millis();
     drawRight();

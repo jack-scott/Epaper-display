@@ -80,7 +80,7 @@ void drawLeftContent(bool showQR)
 // Edit this function when redesigning the layout in your external tool.
 // All coordinates are absolute display pixels. Text uses Org_01 font.
 
-void drawRightContent(const String& team, const String& callsign)
+void drawRightContent(const String& team, const String& callsign, int teamSize)
 {
     display.setFont(&Org_01);
     display.setTextWrap(false);
@@ -142,7 +142,7 @@ void drawRightContent(const String& team, const String& callsign)
     display.setCursor(137, 78);
     display.print(team);
 
-    // Status counter
+    // Status counter (this device is #1, teamSize = total expected)
     display.setCursor(143, 104);
-    display.print("1/3");
+    display.print("1/" + String(teamSize));
 }

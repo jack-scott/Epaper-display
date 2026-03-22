@@ -9,4 +9,5 @@ constexpr int QR_ZONE_W = 95;
 void drawLeftContent(bool showQR);
 
 // Right zone draws the styled team/callsign layout into x: QR_ZONE_W..display.width()
-void drawRightContent(const String& team, const String& callsign);
+// teamSize is the total number of devices expected on this team (displayed as "1/N")
+void drawRightContent(const String& team, const String& callsign, int teamSize);
